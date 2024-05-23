@@ -3,9 +3,12 @@ from solver import Solver
 from atendimentos import Atendimentos
 from ambulancias import Ambulancias
 from typing import List, Dict
+from tqdm import tqdm
+
+import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-CICLOS_DA_SIMULACAO = 10
+CICLOS_DA_SIMULACAO = 288
 
 # modulo que recebe o resultado do solver + a nova entrada e entrega de volta para o solver
 # prepara os dados de um dia de operação
@@ -21,9 +24,12 @@ CICLOS_DA_SIMULACAO = 10
     # adicionar o mecanismo de reaproveitamento de atendimentos - done
     
 # adicionar o gráfico por ciclo
+ # adicionar gráficos de ambulâncias disponíveis
 # adicionar o nome as ambulâncias
 # adicionar o nome aos pacientes das emergências
 
+ambulancias_avancadas_disponiveis_por_simulacao = []
+ambulancias_basicas_disponiveis_por_simulacao = []
 
 def filtrar_ambulancias_nao_impedidas(ambulancias: List[Dict[str, float]]):
     ambulanciasNaoImpedidas = []
@@ -40,7 +46,9 @@ atendimentosBasicosNaoContemplados = []
 ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(6)
 ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(21)
 
-for simulacao in range(0, CICLOS_DA_SIMULACAO):
+simulacao = 0
+
+for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * 5
     atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados)
     atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados)
@@ -108,7 +116,7 @@ for simulacao in range(0, CICLOS_DA_SIMULACAO):
         if 'impedida' not in ele or ele.get('impedida') <= TEMPO_ATUAL: 
             res = res + 1
     
-    print(f"ambulancias avançadas disponiveis {res}")  
+    ambulancias_avancadas_disponiveis_por_simulacao.append(res)
 
     for i in range(quantidade_de_ambulancias_basicas):
         for j in range(quantidade_de_atendimentos_basicos):
@@ -126,8 +134,24 @@ for simulacao in range(0, CICLOS_DA_SIMULACAO):
         if 'impedida' not in ele or ele.get('impedida') <= TEMPO_ATUAL: 
             res = res + 1
     
-    print(f"ambulancias básicas disponiveis {res}")  
+    ambulancias_basicas_disponiveis_por_simulacao.append(res)
+    
+    simulacao += 1
+    
 
+fig, ax = plt.subplots()
+fig, ax2 = plt.subplots()
 
+ax.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
+ax.set_title("Ambulâncias Avançadas Disponíveis")
+ax.set_ylabel("Número de Ambulâncias Avançadas")
+ax.set_xlabel("Simulações")
+
+ax2.plot(range(0, simulacao), ambulancias_basicas_disponiveis_por_simulacao, color="green")
+ax2.set_title("Ambulâncias Básicas Disponíveis")
+ax2.set_ylabel("Número de Básicas Avançadas")
+ax2.set_xlabel("Simulações")
+
+plt.show()
     # print(ambulanciasBasicas)
     # print(ambulanciasAvancadas)   
