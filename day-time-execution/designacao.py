@@ -31,6 +31,9 @@ CICLOS_DA_SIMULACAO = 288
 ambulancias_avancadas_disponiveis_por_simulacao = []
 ambulancias_basicas_disponiveis_por_simulacao = []
 
+porcentagem_de_atendimentos_avancados = []
+porcentagem_de_atendimentos_basicos = []
+
 def filtrar_ambulancias_nao_impedidas(ambulancias: List[Dict[str, float]]):
     ambulanciasNaoImpedidas = []
     
@@ -136,11 +139,18 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     
     ambulancias_basicas_disponiveis_por_simulacao.append(res)
     
+    
+    porcentagem_de_atendimentos_basicos.append(100 * (len(atendimentosBasicosNaoContemplados)/ (len(atendimentosBasicos) or 1)))
+    porcentagem_de_atendimentos_avancados.append(100 * (len(atendimentosAvancadosNaoContemplados) / (len(atendimentosAvancados) or 1)))
+    
     simulacao += 1
     
 
 fig, ax = plt.subplots()
 fig, ax2 = plt.subplots()
+
+fig, ax3 = plt.subplots()
+fig, ax4 = plt.subplots()
 
 ax.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
 ax.set_title("Ambulâncias Avançadas Disponíveis")
@@ -152,6 +162,17 @@ ax2.set_title("Ambulâncias Básicas Disponíveis")
 ax2.set_ylabel("Número de Básicas Avançadas")
 ax2.set_xlabel("Simulações")
 
+ax3.plot(range(0, simulacao), porcentagem_de_atendimentos_avancados, color="blue")
+ax3.set_title("Porcentagem de Atendimentos Avançados Não Realizados")
+ax3.set_ylabel("Porcentagem de Atendimentos Avançados")
+ax3.set_xlabel("Simulações")
+
+ax4.plot(range(0, simulacao), porcentagem_de_atendimentos_basicos, color="green")
+ax4.set_title("Porcentagem de Atendimentos Básicos Não Realizados")
+ax4.set_ylabel("Porcentagem de Atendimentos Básicos")
+ax4.set_xlabel("Simulações")
+
 plt.show()
     # print(ambulanciasBasicas)
     # print(ambulanciasAvancadas)   
+    
