@@ -13,8 +13,13 @@ class Solver:
         quantidade_de_ambulancias_avancadas = len(tempos_ambulancias_avancadas)
         quantidade_de_ambulancias_basicas = len(tempos_ambulancias_basicas)
         
-        quantidade_de_atendimentos_avancados = len(tempos_ambulancias_avancadas[0])
-        quantidade_de_atendimentos_basicos = len(tempos_ambulancias_basicas[0])
+        quantidade_de_atendimentos_avancados = 0
+        if quantidade_de_ambulancias_avancadas:
+            quantidade_de_atendimentos_avancados = len(tempos_ambulancias_avancadas[0])
+        
+        quantidade_de_atendimentos_basicos = 0
+        if quantidade_de_ambulancias_basicas:
+            quantidade_de_atendimentos_basicos = len(tempos_ambulancias_basicas[0])
         
         model = gp.Model()
 

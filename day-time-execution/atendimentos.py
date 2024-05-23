@@ -11,7 +11,7 @@ class Atendimentos:
         for atendimento in atendimentosNaoRealizados:
             atendimentos.append(atendimento)
         
-        quantidade = random.randint(0, 25)
+        quantidade = random.randint(0, 3)
         for _ in range(quantidade):
             atendimentos.append({
                 "x": random.randint(0, 10),
