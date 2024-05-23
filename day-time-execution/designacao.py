@@ -10,7 +10,7 @@ import datetime
 # desconsiderar as ambulâncias em atendimentos
 # plotar a solução graficamente
 
-# adicicionar o cálculo de tempo levando em duração a distância
+# adicicionar o cálculo de tempo levando em duração a distância - done
 
 # adicionar a duração do atendimento
 # adicionar o ciclo de atendimento durante o dia
@@ -47,15 +47,24 @@ tempos_ambulancias_avancadas = []
 for i in range(quantidade_de_ambulancias_avancadas):
     tempos_ambulancias_avancadas.append([])
     for j in range(quantidade_de_atendimentos_avancados):
-        tempos_ambulancias_avancadas[i].append(np.random.randint(12, 100))
+        posicao_ambulancia = np.array([ambulanciasAvancadas[i].get("x"), ambulanciasAvancadas[i].get("y")])
+        posicao_atendimento = np.array([atendimentosAvancados[j].get("x"), atendimentosAvancados[j].get("y")])
+        distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
+        tempo = distancia_euclidiana * (1 + np.random.rand())
+        tempos_ambulancias_avancadas[i].append(tempo)
 
 tempos_ambulancias_basicas = []
 
 for i in range(quantidade_de_ambulancias_basicas):
     tempos_ambulancias_basicas.append([])
     for j in range(quantidade_de_atendimentos_basicos):
-        tempos_ambulancias_basicas[i].append(np.random.randint(12, 100))
-
+        posicao_ambulancia = np.array([ambulanciasBasicas[i].get("x"), ambulanciasBasicas[i].get("y")])
+        posicao_atendimento = np.array([atendimentosBasicos[j].get("x"), atendimentosBasicos[j].get("y")])
+        distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
+        tempo = distancia_euclidiana * (1 + np.random.rand())
+        tempos_ambulancias_basicas[i].append(tempo)
+        
+        
 solucao = Solver.solve(prioridade_ocorrencias_avancadas, prioridade_ocorrencias_basicas, tempos_ambulancias_avancadas, tempos_ambulancias_basicas)
 
 

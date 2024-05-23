@@ -14,8 +14,8 @@ class Atendimentos:
         quantidade = random.randint(0, 25)
         for _ in range(quantidade):
             atendimentos.append({
-                "axisX": random.randint(0, 100),
-                "axisY": random.randint(0, 100),
+                "x": random.randint(0, 100),
+                "y": random.randint(0, 100),
                 "peso": pesos[random.randint(0, 10)]
             })
         
