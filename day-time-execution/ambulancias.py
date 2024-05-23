@@ -9,8 +9,8 @@ class Ambulancias:
         
         for _ in range(quantidade):
             ambulancias.append({
-                "x": random.randint(0, 100),
-                "y": random.randint(0, 100)
+                "x": random.randint(0, 10),
+                "y": random.randint(0, 10)
             })
         
         return ambulancias

@@ -5,14 +5,16 @@ from ambulancias import Ambulancias
 from typing import List, Dict
 import datetime
 
+TIME = 0
+
 # modulo que recebe o resultado do solver + a nova entrada e entrega de volta para o solver
 # prepara os dados de um dia de operação
 # desconsiderar as ambulâncias em atendimentos
 # plotar a solução graficamente
 
 # adicicionar o cálculo de tempo levando em duração a distância - done
+# adicionar a duração do atendimento - done
 
-# adicionar a duração do atendimento
 # adicionar o ciclo de atendimento durante o dia
 # adicionar o gráfico por ciclo
 # adicionar o nome as ambulâncias
@@ -71,12 +73,12 @@ solucao = Solver.solve(prioridade_ocorrencias_avancadas, prioridade_ocorrencias_
 for i in range(quantidade_de_ambulancias_avancadas):
     for j in range(quantidade_de_atendimentos_avancados):
         if solucao["avancados"][(i,j)]:
-            ambulanciasAvancadas[i]["impedida"] = datetime.datetime.now() + datetime.timedelta(minutes=15) 
+            ambulanciasAvancadas[i]["impedida"] = TIME + tempos_ambulancias_avancadas[i][j]
 
 for i in range(quantidade_de_ambulancias_basicas):
     for j in range(quantidade_de_atendimentos_basicos):
         if solucao["basicos"][(i,j)]:
-            ambulanciasBasicas[i]["impedida"] = datetime.datetime.now() + datetime.timedelta(minutes=5) 
+            ambulanciasBasicas[i]["impedida"] = TIME + tempos_ambulancias_basicas[i][j]
 
 
 print(ambulanciasBasicas)
