@@ -8,7 +8,10 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-CICLOS_DA_SIMULACAO = 288
+CICLOS_DA_SIMULACAO = 89
+# tempo de espera
+# quantidade de casos urgentes atendidos básicos e urgentes
+# prioridades dos casos atendidos
 
 # modulo que recebe o resultado do solver + a nova entrada e entrega de volta para o solver
 # prepara os dados de um dia de operação
@@ -52,7 +55,7 @@ ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(21)
 simulacao = 0
 
 for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
-    TEMPO_ATUAL = simulacao * 5
+    TEMPO_ATUAL = simulacao * 15
     atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados)
     atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados)
     
