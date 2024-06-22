@@ -2,34 +2,26 @@ import numpy as np
 from solver import Solver
 from atendimentos import Atendimentos
 from ambulancias import Ambulancias
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from tqdm import tqdm
+import random
+from environment import Environment
+import math
 
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-CICLOS_DA_SIMULACAO = 89
-# tempo de espera
-# quantidade de casos urgentes atendidos básicos e urgentes
-# prioridades dos casos atendidos
+CICLOS_DA_SIMULACAO = 288 * 30 # (quantidade de ciclos de 5 minutos em x dias)
+TEMPO_ENTRE_SIMULACOES = 5
 
-# modulo que recebe o resultado do solver + a nova entrada e entrega de volta para o solver
-# prepara os dados de um dia de operação
-# desconsiderar as ambulâncias em atendimentos
-# plotar a solução graficamente
+# definir uma velocidade média para todas as ambulâncias (57km/h) - done
+# definir a escala do mapa (20km por 20km) - done
 
-# adicicionar o cálculo de tempo levando em duração a distância - done
-# adicionar a duração do atendimento - done
-
-# adicionar o ciclo de atendimento durante o dia
-    # adicionar o ciclo - done
-    # adicionar a remoção das ambulâncias impedidas - done
-    # adicionar o mecanismo de reaproveitamento de atendimentos - done
-    
-# adicionar o gráfico por ciclo
- # adicionar gráficos de ambulâncias disponíveis
-# adicionar o nome as ambulâncias
-# adicionar o nome aos pacientes das emergências
+# tempo médio que as ambulâncias ficaram ôciosas
+# tempo médio de atendimento
+# variância
+# quantas vezes os pacientes avançados tiveram que esperar
+# variar a quantidade de ambulâncias e velocidade
 
 ambulancias_avancadas_disponiveis_por_simulacao = []
 ambulancias_basicas_disponiveis_por_simulacao = []
@@ -49,15 +41,33 @@ def filtrar_ambulancias_nao_impedidas(ambulancias: List[Dict[str, float]]):
 atendimentosAvancadosNaoContemplados = []
 atendimentosBasicosNaoContemplados = []
 
-ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(6)
-ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(21)
+bases: List[Tuple[float,float]] = []
+bases.append([Environment.MAP_SIZE/2, Environment.MAP_SIZE/2 + Environment.MAP_SIZE*(math.sqrt(2)/4)])
+bases.append([Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4), Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4)])
+bases.append([Environment.MAP_SIZE/2 + Environment.MAP_SIZE*(math.sqrt(2)/4), Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4)])
+
+ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(6, bases)
+ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(21, bases)
+
+print(ambulanciasAvancadas)
+print(ambulanciasBasicas)
+
+fig = plt.figure()
+
+x_list, y_list = [], []
+for city in bases:
+    x_list.append(city[0])
+    y_list.append(city[1])
+
+plt.plot(x_list, y_list, 'ro', color="blue")
+plt.show(block=True)
 
 simulacao = 0
 
 for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
-    TEMPO_ATUAL = simulacao * 15
-    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados)
-    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados)
+    TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
+    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, max = 5)
+    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, max = 10)
     
     ambulanciasAvancadasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasAvancadas)
     ambulanciasBasicasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasBasicas)
@@ -87,7 +97,7 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
             posicao_ambulancia = np.array([ambulanciasAvancadasNaoImpedidas[i].get("x"), ambulanciasAvancadasNaoImpedidas[i].get("y")])
             posicao_atendimento = np.array([atendimentosAvancados[j].get("x"), atendimentosAvancados[j].get("y")])
             distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
-            tempo = distancia_euclidiana * (1 + np.random.rand())
+            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (30 * (random.random()))
             tempos_ambulancias_avancadas[i].append(tempo)
 
     tempos_ambulancias_basicas = []
@@ -98,7 +108,7 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
             posicao_ambulancia = np.array([ambulanciasBasicasNaoImpedidas[i].get("x"), ambulanciasBasicasNaoImpedidas[i].get("y")])
             posicao_atendimento = np.array([atendimentosBasicos[j].get("x"), atendimentosBasicos[j].get("y")])
             distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
-            tempo = distancia_euclidiana * (1 + np.random.rand())
+            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (30 * (random.random()))
             tempos_ambulancias_basicas[i].append(tempo)
             
             

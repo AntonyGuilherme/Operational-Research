@@ -1,17 +1,19 @@
-from typing import Dict, List
-from numpy import random
+from typing import Dict, List, Tuple
+
 
 class Ambulancias:
     
     @staticmethod
-    def generate(quantidade) -> List[Dict[str, str]]:
+    def generate(quantidade, bases: List[Tuple[int, int]]) -> List[Dict[str, str]]:
         ambulancias = []
+        quantidadeDeBases = len(bases)
         
-        for _ in range(quantidade):
-            ambulancias.append({
-                "x": random.randint(0, 10),
-                "y": random.randint(0, 10)
-            })
+        for baseIndex in range(quantidadeDeBases):
+            for _ in range((int) (quantidade / quantidadeDeBases)):
+                ambulancias.append({
+                    "x": bases[baseIndex][0],
+                    "y": bases[baseIndex][1]
+                })
         
         return ambulancias
         
