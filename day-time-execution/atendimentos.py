@@ -1,6 +1,7 @@
 from typing import Dict, List
 from numpy import random
 from environment import Environment
+import uuid
 
 class Atendimentos:
     
@@ -15,6 +16,7 @@ class Atendimentos:
         quantidade = random.randint(0, max)
         for _ in range(quantidade):
             atendimentos.append({
+                "id": str(uuid.uuid4()),
                 "x": random.randint(0, Environment.MAP_SIZE),
                 "y": random.randint(0, Environment.MAP_SIZE),
                 "peso": pesos[random.randint(0, 10)]

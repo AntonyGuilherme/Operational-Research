@@ -23,6 +23,12 @@ TEMPO_ENTRE_SIMULACOES = 5
 # quantas vezes os pacientes avançados tiveram que esperar
 # variar a quantidade de ambulâncias e velocidade
 
+todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
+todosOsAtendimentosBasicosNaoRealizadosByUID : Dict[str, float] = {}
+
+mediaDeTempoDeEsperaDeAtendimentosAvancados : List[float] = []
+mediaDeTempoDeEsperaDeAtendimentosBasicos : List[float] = []
+
 ambulancias_avancadas_disponiveis_por_simulacao = []
 ambulancias_basicas_disponiveis_por_simulacao = []
 
@@ -49,25 +55,12 @@ bases.append([Environment.MAP_SIZE/2 + Environment.MAP_SIZE*(math.sqrt(2)/4), En
 ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(6, bases)
 ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(21, bases)
 
-print(ambulanciasAvancadas)
-print(ambulanciasBasicas)
-
-fig = plt.figure()
-
-x_list, y_list = [], []
-for city in bases:
-    x_list.append(city[0])
-    y_list.append(city[1])
-
-plt.plot(x_list, y_list, 'ro', color="blue")
-plt.show(block=True)
-
 simulacao = 0
 
 for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
-    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, max = 5)
-    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, max = 10)
+    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, max = 2)
+    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, max = 3)
     
     ambulanciasAvancadasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasAvancadas)
     ambulanciasBasicasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasBasicas)
@@ -97,7 +90,7 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
             posicao_ambulancia = np.array([ambulanciasAvancadasNaoImpedidas[i].get("x"), ambulanciasAvancadasNaoImpedidas[i].get("y")])
             posicao_atendimento = np.array([atendimentosAvancados[j].get("x"), atendimentosAvancados[j].get("y")])
             distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
-            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (30 * (random.random()))
+            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (60 * (random.random()))
             tempos_ambulancias_avancadas[i].append(tempo)
 
     tempos_ambulancias_basicas = []
@@ -108,7 +101,7 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
             posicao_ambulancia = np.array([ambulanciasBasicasNaoImpedidas[i].get("x"), ambulanciasBasicasNaoImpedidas[i].get("y")])
             posicao_atendimento = np.array([atendimentosBasicos[j].get("x"), atendimentosBasicos[j].get("y")])
             distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
-            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (30 * (random.random()))
+            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (60 * (random.random()))
             tempos_ambulancias_basicas[i].append(tempo)
             
             
@@ -122,10 +115,19 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     
     atendimentosAvancadosNaoContemplados = []
     for j in range(quantidade_de_atendimentos_avancados):
+        atendido = False
         for i in range(quantidade_de_ambulancias_avancadas):
             if solucao["avancados"][(i,j)]:
-                atendimentosAvancadosNaoContemplados.append(atendimentosAvancados[j])
+                atendido = True
                 break
+        
+        if not atendido:
+            atendimentosAvancadosNaoContemplados.append(atendimentosAvancados[j])
+            
+            if atendimentosAvancados[j]["id"] not in todosOsAtendimentosAvancadosNaoRealizadosByUID:
+                todosOsAtendimentosAvancadosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] = 0
+           
+            todosOsAtendimentosAvancadosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] += TEMPO_ENTRE_SIMULACOES
     
     res = 0
     for ele in ambulanciasAvancadas: 
@@ -141,10 +143,21 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     
     atendimentosBasicosNaoContemplados = []
     for j in range(quantidade_de_atendimentos_basicos):
+        atendido = False
         for i in range(quantidade_de_ambulancias_basicas):
             if solucao["basicos"][(i,j)]:
-                atendimentosBasicosNaoContemplados.append(atendimentosBasicos[j])
-    
+                atendido = True
+                break
+        
+        if not atendido:
+            atendimentosBasicosNaoContemplados.append(atendimentosBasicos[j])
+            
+            if atendimentosAvancados[j]["id"] not in todosOsAtendimentosBasicosNaoRealizadosByUID:
+                todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] = 0
+           
+            todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] += TEMPO_ENTRE_SIMULACOES
+            
+            
     res = 0
     for ele in ambulanciasBasicas: 
         if 'impedida' not in ele or ele.get('impedida') <= TEMPO_ATUAL: 
@@ -152,11 +165,15 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     
     ambulancias_basicas_disponiveis_por_simulacao.append(res)
     
-    
     porcentagem_de_atendimentos_basicos.append(100 * (len(atendimentosBasicosNaoContemplados)/ (len(atendimentosBasicos) or 1)))
     porcentagem_de_atendimentos_avancados.append(100 * (len(atendimentosAvancadosNaoContemplados) / (len(atendimentosAvancados) or 1)))
     
     simulacao += 1
+    
+    
+    
+    print(todosOsAtendimentosAvancadosNaoRealizadosByUID)
+    print(todosOsAtendimentosBasicosNaoRealizadosByUID)
     
 
 fig, ax = plt.subplots()
