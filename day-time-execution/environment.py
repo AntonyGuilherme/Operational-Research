@@ -1,4 +1,7 @@
 class Environment:
     MAP_SIZE = 20000
-    AVERAGE_SPEED = 60*(1000/60) # 950 metros por minuto
+    SPEED = 40
+    AVANCADAS = 6
+    BASICAS = 21
+    AVERAGE_SPEED = SPEED*(1000/60) # 950 metros por minuto
     

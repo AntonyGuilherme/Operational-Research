@@ -12,7 +12,7 @@ from statistics import stdev, mean
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-QUNATIDADE_DE_DIAS = 30
+QUNATIDADE_DE_DIAS = 1
 CICLOS_DA_SIMULACAO = 288 * QUNATIDADE_DE_DIAS # (quantidade de ciclos de 5 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 5
 
@@ -26,14 +26,15 @@ TEMPO_ENTRE_SIMULACOES = 5
 # variar a quantidade de ambulâncias e velocidade
 # Velocidade    | Ambulâncias Avançadas     | Ambulâncias Avançadas | Done
 
+# 40km/h        | 6                         | 21                    | X
 # 50km/h        | 6                         | 21                    | X
 # 60km/h        | 6                         | 21                    | X
-# 40km/h        | 6                         | 21                    | X
 
 # 50km/h        | 3                         | 14                    | X
 # 50km/h        | 6                         | 21                    | X
 # 50km/h        | 9                         | 28                    | X
 
+# 40km/h        | 3                         | 14                    | X
 # 60km/h        | 9                         | 28                    | X
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
@@ -211,14 +212,14 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     media = media / (q or 1)   
     mediaDeTempoDeEsperaDeAtendimentosBasicos.append(media)
     
-fig, ax = plt.subplots()
-fig, ax2 = plt.subplots()
+fig1, ax = plt.subplots()
+fig2, ax2 = plt.subplots()
 
-fig, ax3 = plt.subplots()
-fig, ax4 = plt.subplots()
+fig3, ax3 = plt.subplots()
+fig4, ax4 = plt.subplots()
 
-fig, ax5 = plt.subplots()
-fig, ax6 = plt.subplots()
+fig5, ax5 = plt.subplots()
+fig6, ax6 = plt.subplots()
 
 mediaAvancada = mean(mediaDeTempoDeEsperaDeAtendimentosAvancados)
 desvioPadraoAvancado = stdev(mediaDeTempoDeEsperaDeAtendimentosAvancados)
@@ -231,6 +232,8 @@ ax.set_ylabel("Tempo em Minutos")
 ax.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 ax.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
+fig1.savefig(f"Espera_Media_Basica_{Environment.SPEED}_{Environment.BASICAS}")
+
 mediaBasica = mean(mediaDeTempoDeEsperaDeAtendimentosBasicos)
 desvioPadroaBasico = stdev(mediaDeTempoDeEsperaDeAtendimentosBasicos)
 ax2.plot(range(0, simulacao), mediaDeTempoDeEsperaDeAtendimentosBasicos, color="green")
@@ -242,24 +245,32 @@ ax2.set_ylabel("Tempo em Minutos")
 ax2.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 ax2.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
+fig2.savefig(f"Espera_Media_Avancada_{Environment.SPEED}_{Environment.BASICAS}")
+
 ax3.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
 ax3.set_title("Ambulâncias Avançadas Disponíveis")
 ax3.set_ylabel("Número de Ambulâncias Avançadas")
 ax3.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+fig3.savefig(f"Disponiveis_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
 
 ax4.plot(range(0, simulacao), ambulancias_basicas_disponiveis_por_simulacao, color="green")
 ax4.set_title("Ambulâncias Básicas Disponíveis")
 ax4.set_ylabel("Número de Básicas Avançadas")
 ax4.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
+fig4.savefig(f"Disponiveis_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
+
 ax5.plot(range(0, simulacao), porcentagem_de_atendimentos_avancados, color="blue")
 ax5.set_title("Porcentagem de Atendimentos Avançados Não Realizados")
 ax5.set_ylabel("Porcentagem de Atendimentos Avançados")
 ax5.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+fig5.savefig(f"Porcentagem_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
 
 ax6.plot(range(0, simulacao), porcentagem_de_atendimentos_basicos, color="green")
 ax6.set_title("Porcentagem de Atendimentos Básicos Não Realizados")
 ax6.set_ylabel("Porcentagem de Atendimentos Básicos")
 ax6.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
-plt.show()
+fig6.savefig(f"Porcentagem_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
