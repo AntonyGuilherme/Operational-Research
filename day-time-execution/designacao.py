@@ -7,18 +7,21 @@ from tqdm import tqdm
 import random
 from environment import Environment
 import math
+from statistics import stdev, mean
 
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-CICLOS_DA_SIMULACAO = 288 * 15 # (quantidade de ciclos de 5 minutos em x dias)
+CICLOS_DA_SIMULACAO = 144 #288 * 30 # (quantidade de ciclos de 5 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 5
 
 # definir uma velocidade média para todas as ambulâncias (57km/h) - done
 # definir a escala do mapa (20km por 20km) - done
 
 # tempo médio de atendimento - done
-# variância
+# variância - done
+
+# Experimentos
 # variar a quantidade de ambulâncias e velocidade
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
@@ -196,7 +199,6 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     media = media / (q or 1)   
     mediaDeTempoDeEsperaDeAtendimentosBasicos.append(media)
     
-
 fig, ax = plt.subplots()
 fig, ax2 = plt.subplots()
 
@@ -206,12 +208,22 @@ fig, ax4 = plt.subplots()
 fig, ax5 = plt.subplots()
 fig, ax6 = plt.subplots()
 
+mediaAvancada = mean(mediaDeTempoDeEsperaDeAtendimentosAvancados)
+desvioPadraoAvancado = stdev(mediaDeTempoDeEsperaDeAtendimentosAvancados)
 ax.plot(range(0, simulacao), mediaDeTempoDeEsperaDeAtendimentosAvancados, color="blue")
+ax.axhline(y=(mediaAvancada + desvioPadraoAvancado), xmin= 0, xmax=simulacao, color="red")
+ax.axhline(y=mediaAvancada, xmin= 0, xmax=simulacao, color="orange")
+ax.axhline(y=(mediaAvancada - desvioPadraoAvancado), xmin= 0, xmax=simulacao, color="red")
 ax.set_title("Tempo de Espera Médio Para Atendimentos Avançados (minutos)")
 ax.set_ylabel("Tempo em Minutos")
 ax.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
+mediaBasica = mean(mediaDeTempoDeEsperaDeAtendimentosBasicos)
+desvioPadroaBasico = stdev(mediaDeTempoDeEsperaDeAtendimentosBasicos)
 ax2.plot(range(0, simulacao), mediaDeTempoDeEsperaDeAtendimentosBasicos, color="green")
+ax2.axhline(y=(mediaBasica + desvioPadroaBasico), xmin= 0, xmax=simulacao, color="red")
+ax2.axhline(y=(mediaBasica), xmin= 0, xmax=simulacao, color="orange")
+ax2.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color="red")
 ax2.set_title("Tempo de Espera Médio Para Atendimentos Básicos (minutos)")
 ax2.set_ylabel("Tempo em Minutos")
 ax2.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
