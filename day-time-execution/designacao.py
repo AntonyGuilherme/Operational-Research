@@ -11,16 +11,14 @@ import math
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-CICLOS_DA_SIMULACAO = 288 * 30 # (quantidade de ciclos de 5 minutos em x dias)
+CICLOS_DA_SIMULACAO = 288 * 15 # (quantidade de ciclos de 5 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 5
 
 # definir uma velocidade média para todas as ambulâncias (57km/h) - done
 # definir a escala do mapa (20km por 20km) - done
 
-# tempo médio que as ambulâncias ficaram ôciosas
-# tempo médio de atendimento
+# tempo médio de atendimento - done
 # variância
-# quantas vezes os pacientes avançados tiveram que esperar
 # variar a quantidade de ambulâncias e velocidade
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
@@ -59,8 +57,8 @@ simulacao = 0
 
 for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
-    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, max = 2)
-    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, max = 3)
+    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, todosOsAtendimentosAvancadosNaoRealizadosByUID, max = 2)
+    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, todosOsAtendimentosBasicosNaoRealizadosByUID, max = 6)
     
     ambulanciasAvancadasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasAvancadas)
     ambulanciasBasicasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasBasicas)
@@ -121,13 +119,17 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
                 atendido = True
                 break
         
-        if not atendido:
+        if not atendido and (atendimentosAvancados[j]["id"] not in todosOsAtendimentosAvancadosNaoRealizadosByUID or
+                             todosOsAtendimentosAvancadosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] < 180):
             atendimentosAvancadosNaoContemplados.append(atendimentosAvancados[j])
             
             if atendimentosAvancados[j]["id"] not in todosOsAtendimentosAvancadosNaoRealizadosByUID:
                 todosOsAtendimentosAvancadosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] = 0
            
             todosOsAtendimentosAvancadosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] += TEMPO_ENTRE_SIMULACOES
+        
+        else:
+            todosOsAtendimentosAvancadosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] = 0
     
     res = 0
     for ele in ambulanciasAvancadas: 
@@ -149,13 +151,17 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
                 atendido = True
                 break
         
-        if not atendido:
+        if not atendido and (atendimentosBasicos[j]["id"] not in  todosOsAtendimentosBasicosNaoRealizadosByUID or
+                 todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosBasicos[j]["id"]] <= 120):
             atendimentosBasicosNaoContemplados.append(atendimentosBasicos[j])
             
-            if atendimentosAvancados[j]["id"] not in todosOsAtendimentosBasicosNaoRealizadosByUID:
-                todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] = 0
+            if atendimentosBasicos[j]["id"] not in todosOsAtendimentosBasicosNaoRealizadosByUID:
+                todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosBasicos[j]["id"]] = 0
            
-            todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosAvancados[j]["id"]] += TEMPO_ENTRE_SIMULACOES
+            todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosBasicos[j]["id"]] += TEMPO_ENTRE_SIMULACOES
+        
+        else:
+            todosOsAtendimentosBasicosNaoRealizadosByUID[atendimentosBasicos[j]["id"]] = 0
             
             
     res = 0
@@ -170,10 +176,25 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     
     simulacao += 1
     
+    media: float = 0
+    q = 0
+    for uid in todosOsAtendimentosAvancadosNaoRealizadosByUID:
+        media += todosOsAtendimentosAvancadosNaoRealizadosByUID[uid]
+        if todosOsAtendimentosAvancadosNaoRealizadosByUID[uid] > 0:
+            q = q + 1
     
+    media = media / (q or 1)        
+    mediaDeTempoDeEsperaDeAtendimentosAvancados.append(media)
     
-    print(todosOsAtendimentosAvancadosNaoRealizadosByUID)
-    print(todosOsAtendimentosBasicosNaoRealizadosByUID)
+    media = 0
+    q = 0
+    for uid in todosOsAtendimentosBasicosNaoRealizadosByUID:
+        media += todosOsAtendimentosBasicosNaoRealizadosByUID[uid]
+        if todosOsAtendimentosBasicosNaoRealizadosByUID[uid] > 0:
+            q = q + 1
+    
+    media = media / (q or 1)   
+    mediaDeTempoDeEsperaDeAtendimentosBasicos.append(media)
     
 
 fig, ax = plt.subplots()
@@ -182,27 +203,38 @@ fig, ax2 = plt.subplots()
 fig, ax3 = plt.subplots()
 fig, ax4 = plt.subplots()
 
-ax.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
-ax.set_title("Ambulâncias Avançadas Disponíveis")
-ax.set_ylabel("Número de Ambulâncias Avançadas")
-ax.set_xlabel("Simulações")
+fig, ax5 = plt.subplots()
+fig, ax6 = plt.subplots()
 
-ax2.plot(range(0, simulacao), ambulancias_basicas_disponiveis_por_simulacao, color="green")
-ax2.set_title("Ambulâncias Básicas Disponíveis")
-ax2.set_ylabel("Número de Básicas Avançadas")
-ax2.set_xlabel("Simulações")
+ax.plot(range(0, simulacao), mediaDeTempoDeEsperaDeAtendimentosAvancados, color="blue")
+ax.set_title("Tempo de Espera Médio Para Atendimentos Avançados (minutos)")
+ax.set_ylabel("Tempo em Minutos")
+ax.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
-ax3.plot(range(0, simulacao), porcentagem_de_atendimentos_avancados, color="blue")
-ax3.set_title("Porcentagem de Atendimentos Avançados Não Realizados")
-ax3.set_ylabel("Porcentagem de Atendimentos Avançados")
-ax3.set_xlabel("Simulações")
+ax2.plot(range(0, simulacao), mediaDeTempoDeEsperaDeAtendimentosBasicos, color="green")
+ax2.set_title("Tempo de Espera Médio Para Atendimentos Básicos (minutos)")
+ax2.set_ylabel("Tempo em Minutos")
+ax2.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
-ax4.plot(range(0, simulacao), porcentagem_de_atendimentos_basicos, color="green")
-ax4.set_title("Porcentagem de Atendimentos Básicos Não Realizados")
-ax4.set_ylabel("Porcentagem de Atendimentos Básicos")
-ax4.set_xlabel("Simulações")
+ax3.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
+ax3.set_title("Ambulâncias Avançadas Disponíveis")
+ax3.set_ylabel("Número de Ambulâncias Avançadas")
+ax3.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
-plt.show()
-    # print(ambulanciasBasicas)
-    # print(ambulanciasAvancadas)   
+ax4.plot(range(0, simulacao), ambulancias_basicas_disponiveis_por_simulacao, color="green")
+ax4.set_title("Ambulâncias Básicas Disponíveis")
+ax4.set_ylabel("Número de Básicas Avançadas")
+ax4.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+ax5.plot(range(0, simulacao), porcentagem_de_atendimentos_avancados, color="blue")
+ax5.set_title("Porcentagem de Atendimentos Avançados Não Realizados")
+ax5.set_ylabel("Porcentagem de Atendimentos Avançados")
+ax5.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+ax6.plot(range(0, simulacao), porcentagem_de_atendimentos_basicos, color="green")
+ax6.set_title("Porcentagem de Atendimentos Básicos Não Realizados")
+ax6.set_ylabel("Porcentagem de Atendimentos Básicos")
+ax6.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+plt.show()   
     
