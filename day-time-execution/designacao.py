@@ -25,9 +25,17 @@ TEMPO_ENTRE_SIMULACOES = 5
 # Experimentos
 # variar a quantidade de ambulâncias e velocidade
 # Velocidade    | Ambulâncias Avançadas     | Ambulâncias Avançadas | Done
+
 # 50km/h        | 6                         | 21                    | X
 # 60km/h        | 6                         | 21                    | X
 # 40km/h        | 6                         | 21                    | X
+
+# 50km/h        | 3                         | 14                    | X
+# 50km/h        | 6                         | 21                    | X
+# 50km/h        | 9                         | 28                    | X
+
+# 40km/h        | 3                         | 14                    | X
+# 60km/h        | 9                         | 28                    | X
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
 todosOsAtendimentosBasicosNaoRealizadosByUID : Dict[str, float] = {}
@@ -58,8 +66,8 @@ bases.append([Environment.MAP_SIZE/2, Environment.MAP_SIZE/2 + Environment.MAP_S
 bases.append([Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4), Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4)])
 bases.append([Environment.MAP_SIZE/2 + Environment.MAP_SIZE*(math.sqrt(2)/4), Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4)])
 
-ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(6, bases)
-ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(21, bases)
+ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(3, bases)
+ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(14, bases)
 
 simulacao = 0
 
