@@ -24,8 +24,10 @@ TEMPO_ENTRE_SIMULACOES = 5
 
 # Experimentos
 # variar a quantidade de ambulâncias e velocidade
-# Velocidade    | Ambulâncias Avançadas     | Ambulâncias Avançadas
-# 50km/h        | 6                         | 21
+# Velocidade    | Ambulâncias Avançadas     | Ambulâncias Avançadas | Done
+# 50km/h        | 6                         | 21                    | X
+# 60km/h        | 6                         | 21                    | 
+# 40km/h        | 6                         | 21                    | 
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
 todosOsAtendimentosBasicosNaoRealizadosByUID : Dict[str, float] = {}
