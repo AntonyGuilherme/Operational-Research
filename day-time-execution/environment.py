@@ -4,4 +4,3 @@ class Environment:
     AVANCADAS = 6
     BASICAS = 21
     AVERAGE_SPEED = SPEED*(1000/60) # 950 metros por minuto
-    

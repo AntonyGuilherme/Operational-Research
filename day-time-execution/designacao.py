@@ -12,7 +12,7 @@ from statistics import stdev, mean
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-QUNATIDADE_DE_DIAS = 1
+QUNATIDADE_DE_DIAS = 30
 CICLOS_DA_SIMULACAO = 288 * QUNATIDADE_DE_DIAS # (quantidade de ciclos de 5 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 5
 
@@ -27,15 +27,15 @@ TEMPO_ENTRE_SIMULACOES = 5
 # Velocidade    | Ambulâncias Avançadas     | Ambulâncias Avançadas | Done
 
 # 40km/h        | 6                         | 21                    | X
-# 50km/h        | 6                         | 21                    | X
-# 60km/h        | 6                         | 21                    | X
+# 50km/h        | 6                         | 21                    | 
+# 60km/h        | 6                         | 21                    | 
 
-# 50km/h        | 3                         | 14                    | X
-# 50km/h        | 6                         | 21                    | X
-# 50km/h        | 9                         | 28                    | X
+# 50km/h        | 3                         | 14                    | 
+# 50km/h        | 6                         | 21                    | 
+# 50km/h        | 9                         | 28                    | 
 
-# 40km/h        | 3                         | 14                    | X
-# 60km/h        | 9                         | 28                    | X
+# 40km/h        | 3                         | 14                    | 
+# 60km/h        | 9                         | 28                    | 
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
 todosOsAtendimentosBasicosNaoRealizadosByUID : Dict[str, float] = {}
@@ -66,8 +66,8 @@ bases.append([Environment.MAP_SIZE/2, Environment.MAP_SIZE/2 + Environment.MAP_S
 bases.append([Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4), Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4)])
 bases.append([Environment.MAP_SIZE/2 + Environment.MAP_SIZE*(math.sqrt(2)/4), Environment.MAP_SIZE/2 - Environment.MAP_SIZE*(math.sqrt(2)/4)])
 
-ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(9, bases)
-ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(28, bases)
+ambulanciasAvancadas: List[Dict[str, int]] = Ambulancias.generate(Environment.AVANCADAS, bases)
+ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(Environment.BASICAS, bases)
 
 simulacao = 0
 
