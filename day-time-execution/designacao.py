@@ -12,7 +12,8 @@ from statistics import stdev, mean
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-CICLOS_DA_SIMULACAO = 144 #288 * 30 # (quantidade de ciclos de 5 minutos em x dias)
+QUNATIDADE_DE_DIAS = 30
+CICLOS_DA_SIMULACAO = 288 * QUNATIDADE_DE_DIAS # (quantidade de ciclos de 5 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 5
 
 # definir uma velocidade média para todas as ambulâncias (57km/h) - done
@@ -23,6 +24,8 @@ TEMPO_ENTRE_SIMULACOES = 5
 
 # Experimentos
 # variar a quantidade de ambulâncias e velocidade
+# Velocidade    | Ambulâncias Avançadas     | Ambulâncias Avançadas
+# 50km/h        | 6                         | 21
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
 todosOsAtendimentosBasicosNaoRealizadosByUID : Dict[str, float] = {}
@@ -102,7 +105,7 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
             posicao_ambulancia = np.array([ambulanciasBasicasNaoImpedidas[i].get("x"), ambulanciasBasicasNaoImpedidas[i].get("y")])
             posicao_atendimento = np.array([atendimentosBasicos[j].get("x"), atendimentosBasicos[j].get("y")])
             distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
-            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (60 * (random.random()))
+            tempo = (distancia_euclidiana / Environment.AVERAGE_SPEED) + (30 * (random.random()))
             tempos_ambulancias_basicas[i].append(tempo)
             
             
