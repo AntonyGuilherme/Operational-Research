@@ -14,7 +14,7 @@ class Atendimentos:
             atendimento["peso"] += todosOsAtendimentosNaoRealizadosByUID[atendimento["id"]]
             atendimentos.append(atendimento)
         
-        quantidade = random.randint(0, max)
+        quantidade = random.randint(1, max)
         for _ in range(quantidade):
             atendimentos.append({
                 "id": str(uuid.uuid4()),

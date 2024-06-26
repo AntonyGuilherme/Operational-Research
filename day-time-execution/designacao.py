@@ -12,19 +12,26 @@ from statistics import stdev, mean
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-QUNATIDADE_DE_DIAS = 30
-CICLOS_DA_SIMULACAO = 288 * QUNATIDADE_DE_DIAS # (quantidade de ciclos de 5 minutos em x dias)
-TEMPO_ENTRE_SIMULACOES = 5
+QUANTIDADE_DE_DIAS = 7
+CICLOS_DA_SIMULACAO = 96 * QUANTIDADE_DE_DIAS # (quantidade de ciclos de 15 minutos em x dias)
+TEMPO_ENTRE_SIMULACOES = 15
 
 # definir uma velocidade média para todas as ambulâncias (57km/h) - done
 # definir a escala do mapa (20km por 20km) - done
+# número de chamados por tempo
 
 # tempo médio de atendimento - done
 # variância - done
 
+# 1. Quantas vezes um atendimento básico deixou de ser atendido
+# 2. Quantas vezes um atendimento urgente deixou de ser atendido
+# 3. Qual é a média de tempo que um chamado urgente leva para ser atendido?
+# 4. Qual o número médio de USB/USA's disponíveis por passo de tempo?
+# 5. Qual a média da distância que uma unidade está de um chamado atribuído?
+
 # Experimentos
 # variar a quantidade de ambulâncias e velocidade
-# Velocidade    | Ambulâncias Avançadas     | Ambulâncias Avançadas | Done
+# Velocidade    | Ambulâncias Avançadas     | Ambulâncias Básicas | Done
 
 # 40km/h        | 6                         | 21                    | X
 # 50km/h        | 6                         | 21                    | 
@@ -274,3 +281,5 @@ ax6.set_ylabel("Porcentagem de Atendimentos Básicos")
 ax6.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
 fig6.savefig(f"Porcentagem_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
+
+plt.show()
