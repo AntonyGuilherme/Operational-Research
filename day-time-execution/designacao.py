@@ -23,10 +23,10 @@ TEMPO_ENTRE_SIMULACOES = 15
 # tempo médio de atendimento - done
 # variância - done
 
-# 1. Quantas vezes um atendimento básico deixou de ser atendido
-# 2. Quantas vezes um atendimento urgente deixou de ser atendido
-# 3. Qual é a média de tempo que um chamado urgente leva para ser atendido?
-# 4. Qual o número médio de USB/USA's disponíveis por passo de tempo?
+# 1. Quantas vezes um atendimento básico / urgente deixou de ser atendidom - done
+# 2. Qual é a média de tempo que um chamado urgente leva para ser atendido? - done
+# 3. Qual o número médio de USB/USA's disponíveis por passo de tempo? - done
+
 # 5. Qual a média da distância que uma unidade está de um chamado atribuído?
 
 # Experimentos
@@ -53,8 +53,8 @@ mediaDeTempoDeEsperaDeAtendimentosBasicos : List[float] = []
 ambulancias_avancadas_disponiveis_por_simulacao = []
 ambulancias_basicas_disponiveis_por_simulacao = []
 
-porcentagem_de_atendimentos_avancados = []
-porcentagem_de_atendimentos_basicos = []
+numero_de_atendimentos_avancados_nao_comtemplados = []
+numero_de_atendimentos_basicos_nao_comtemplados = []
 
 def filtrar_ambulancias_nao_impedidas(ambulancias: List[Dict[str, float]]):
     ambulanciasNaoImpedidas = []
@@ -80,8 +80,8 @@ simulacao = 0
 
 for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
-    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, todosOsAtendimentosAvancadosNaoRealizadosByUID, max = 2)
-    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, todosOsAtendimentosBasicosNaoRealizadosByUID, max = 6)
+    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, todosOsAtendimentosAvancadosNaoRealizadosByUID, max = 8)
+    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, todosOsAtendimentosBasicosNaoRealizadosByUID, max = 15)
     
     ambulanciasAvancadasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasAvancadas)
     ambulanciasBasicasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasBasicas)
@@ -194,8 +194,8 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     
     ambulancias_basicas_disponiveis_por_simulacao.append(res)
     
-    porcentagem_de_atendimentos_basicos.append(100 * (len(atendimentosBasicosNaoContemplados)/ (len(atendimentosBasicos) or 1)))
-    porcentagem_de_atendimentos_avancados.append(100 * (len(atendimentosAvancadosNaoContemplados) / (len(atendimentosAvancados) or 1)))
+    numero_de_atendimentos_basicos_nao_comtemplados.append(len(atendimentosBasicosNaoContemplados))
+    numero_de_atendimentos_avancados_nao_comtemplados.append(len(atendimentosAvancadosNaoContemplados))
     
     simulacao += 1
     
@@ -225,8 +225,8 @@ fig2, ax2 = plt.subplots()
 fig3, ax3 = plt.subplots()
 fig4, ax4 = plt.subplots()
 
-fig5, ax5 = plt.subplots()
-fig6, ax6 = plt.subplots()
+# fig5, ax5 = plt.subplots()
+# fig6, ax6 = plt.subplots()
 
 mediaAvancada = mean(mediaDeTempoDeEsperaDeAtendimentosAvancados)
 desvioPadraoAvancado = stdev(mediaDeTempoDeEsperaDeAtendimentosAvancados)
@@ -254,32 +254,59 @@ ax2.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", 
 
 fig2.savefig(f"Espera_Media_Avancada_{Environment.SPEED}_{Environment.BASICAS}")
 
-ax3.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
-ax3.set_title("Ambulâncias Avançadas Disponíveis")
-ax3.set_ylabel("Número de Ambulâncias Avançadas")
-ax3.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
-fig3.savefig(f"Disponiveis_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
+mediaBasica = mean(numero_de_atendimentos_basicos_nao_comtemplados)
+desvioPadroaBasico = stdev(numero_de_atendimentos_basicos_nao_comtemplados)
+ax3.plot(range(0, simulacao), numero_de_atendimentos_basicos_nao_comtemplados, color="green")
+ax3.axhline(y=(mediaBasica + desvioPadroaBasico), xmin= 0, xmax=simulacao, color="red")
+ax3.axhline(y=(mediaBasica), xmin= 0, xmax=simulacao, color="orange")
+ax3.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color="black")
+ax3.set_title("Número de Atendimentos Basicos Não Realizados")
+ax3.set_ylabel("Número de Atendimentos Basicos Não Realizados")
+ax3.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
+ax3.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
-ax4.plot(range(0, simulacao), ambulancias_basicas_disponiveis_por_simulacao, color="green")
-ax4.set_title("Ambulâncias Básicas Disponíveis")
-ax4.set_ylabel("Número de Básicas Avançadas")
-ax4.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+fig3.savefig(f"Numero_De_Atendimentos_Basicos_Nao_Realizados_{Environment.SPEED}_{Environment.BASICAS}")
 
-fig4.savefig(f"Disponiveis_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
+mediaBasica = mean(numero_de_atendimentos_avancados_nao_comtemplados)
+desvioPadroaBasico = stdev(numero_de_atendimentos_avancados_nao_comtemplados)
+ax4.plot(range(0, simulacao), numero_de_atendimentos_avancados_nao_comtemplados, color="blue")
+ax4.axhline(y=(mediaBasica + desvioPadroaBasico), xmin= 0, xmax=simulacao, color="red")
+ax4.axhline(y=(mediaBasica), xmin= 0, xmax=simulacao, color="orange")
+ax4.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color="black")
+ax4.set_title("Número de Atendimentos Avançados Não Realizados")
+ax4.set_ylabel("Número de Atendimentos Avançados Não Realizados")
+ax4.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
+ax4.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
-ax5.plot(range(0, simulacao), porcentagem_de_atendimentos_avancados, color="blue")
-ax5.set_title("Porcentagem de Atendimentos Avançados Não Realizados")
-ax5.set_ylabel("Porcentagem de Atendimentos Avançados")
-ax5.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+fig4.savefig(f"Numero_De_Atendimentos_Avancados_Nao_Realizados_{Environment.SPEED}_{Environment.BASICAS}")
 
-fig5.savefig(f"Porcentagem_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
+# ax3.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
+# ax3.set_title("Ambulâncias Avançadas Disponíveis")
+# ax3.set_ylabel("Número de Ambulâncias Avançadas")
+# ax3.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
 
-ax6.plot(range(0, simulacao), porcentagem_de_atendimentos_basicos, color="green")
-ax6.set_title("Porcentagem de Atendimentos Básicos Não Realizados")
-ax6.set_ylabel("Porcentagem de Atendimentos Básicos")
-ax6.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+# fig3.savefig(f"Disponiveis_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
 
-fig6.savefig(f"Porcentagem_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
+# ax4.plot(range(0, simulacao), ambulancias_basicas_disponiveis_por_simulacao, color="green")
+# ax4.set_title("Ambulâncias Básicas Disponíveis")
+# ax4.set_ylabel("Número de Básicas Avançadas")
+# ax4.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+# fig4.savefig(f"Disponiveis_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
+
+# ax5.plot(range(0, simulacao), porcentagem_de_atendimentos_avancados, color="blue")
+# ax5.set_title("Porcentagem de Atendimentos Avançados Não Realizados")
+# ax5.set_ylabel("Porcentagem de Atendimentos Avançados")
+# ax5.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+# fig5.savefig(f"Porcentagem_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
+
+# ax6.plot(range(0, simulacao), porcentagem_de_atendimentos_basicos, color="green")
+# ax6.set_title("Porcentagem de Atendimentos Básicos Não Realizados")
+# ax6.set_ylabel("Porcentagem de Atendimentos Básicos")
+# ax6.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+
+# fig6.savefig(f"Porcentagem_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
 
 plt.show()
