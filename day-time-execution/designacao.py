@@ -27,7 +27,7 @@ TEMPO_ENTRE_SIMULACOES = 15
 # 2. Qual é a média de tempo que um chamado urgente leva para ser atendido? - done
 # 3. Qual o número médio de USB/USA's disponíveis por passo de tempo? - done
 
-# 5. Qual a média da distância que uma unidade está de um chamado atribuído?
+# 4. Qual a média da distância que uma unidade está de um chamado atribuído?
 
 # Experimentos
 # variar a quantidade de ambulâncias e velocidade
@@ -55,6 +55,9 @@ ambulancias_basicas_disponiveis_por_simulacao = []
 
 numero_de_atendimentos_avancados_nao_comtemplados = []
 numero_de_atendimentos_basicos_nao_comtemplados = []
+
+mediaDeDistanciaDosAtendimentosBasicos = []
+mediaDeDistanciaDosAtendimentosAvancados = []
 
 def filtrar_ambulancias_nao_impedidas(ambulancias: List[Dict[str, float]]):
     ambulanciasNaoImpedidas = []
@@ -135,11 +138,16 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
                 ambulanciasAvancadasNaoImpedidas[i]["impedida"] = TEMPO_ATUAL + tempos_ambulancias_avancadas[i][j]
     
     atendimentosAvancadosNaoContemplados = []
+    distanciasAvancadasParciais = []
     for j in range(quantidade_de_atendimentos_avancados):
         atendido = False
         for i in range(quantidade_de_ambulancias_avancadas):
             if solucao["avancados"][(i,j)]:
                 atendido = True
+                posicao_ambulancia = np.array([ambulanciasAvancadasNaoImpedidas[i].get("x"), ambulanciasAvancadasNaoImpedidas[i].get("y")])
+                posicao_atendimento = np.array([atendimentosAvancados[j].get("x"), atendimentosAvancados[j].get("y")])
+                distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
+                distanciasAvancadasParciais.append(distancia_euclidiana) 
                 break
         
         if not atendido and (atendimentosAvancados[j]["id"] not in todosOsAtendimentosAvancadosNaoRealizadosByUID or
@@ -167,11 +175,16 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
                 ambulanciasBasicasNaoImpedidas[i]["impedida"] = TEMPO_ATUAL + tempos_ambulancias_basicas[i][j]
     
     atendimentosBasicosNaoContemplados = []
+    distanciasBasicasParciais = []
     for j in range(quantidade_de_atendimentos_basicos):
         atendido = False
         for i in range(quantidade_de_ambulancias_basicas):
             if solucao["basicos"][(i,j)]:
                 atendido = True
+                posicao_ambulancia = np.array([ambulanciasBasicasNaoImpedidas[i].get("x"), ambulanciasBasicasNaoImpedidas[i].get("y")])
+                posicao_atendimento = np.array([atendimentosBasicos[j].get("x"), atendimentosBasicos[j].get("y")])
+                distancia_euclidiana = np.linalg.norm(posicao_ambulancia - posicao_atendimento)
+                distanciasBasicasParciais.append(distancia_euclidiana) 
                 break
         
         if not atendido and (atendimentosBasicos[j]["id"] not in  todosOsAtendimentosBasicosNaoRealizadosByUID or
@@ -219,14 +232,20 @@ for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     media = media / (q or 1)   
     mediaDeTempoDeEsperaDeAtendimentosBasicos.append(media)
     
+    mediaDeDistanciaDosAtendimentosBasicos.append(mean(distanciasBasicasParciais))
+    mediaDeDistanciaDosAtendimentosAvancados.append(mean(distanciasAvancadasParciais))
+    
 fig1, ax = plt.subplots()
 fig2, ax2 = plt.subplots()
 
 fig3, ax3 = plt.subplots()
 fig4, ax4 = plt.subplots()
 
-# fig5, ax5 = plt.subplots()
-# fig6, ax6 = plt.subplots()
+fig5, ax5 = plt.subplots()
+fig6, ax6 = plt.subplots()
+
+fig7, ax7 = plt.subplots()
+fig8, ax8 = plt.subplots()
 
 mediaAvancada = mean(mediaDeTempoDeEsperaDeAtendimentosAvancados)
 desvioPadraoAvancado = stdev(mediaDeTempoDeEsperaDeAtendimentosAvancados)
@@ -254,7 +273,6 @@ ax2.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", 
 
 fig2.savefig(f"Espera_Media_Avancada_{Environment.SPEED}_{Environment.BASICAS}")
 
-
 mediaBasica = mean(numero_de_atendimentos_basicos_nao_comtemplados)
 desvioPadroaBasico = stdev(numero_de_atendimentos_basicos_nao_comtemplados)
 ax3.plot(range(0, simulacao), numero_de_atendimentos_basicos_nao_comtemplados, color="green")
@@ -281,32 +299,30 @@ ax4.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", 
 
 fig4.savefig(f"Numero_De_Atendimentos_Avancados_Nao_Realizados_{Environment.SPEED}_{Environment.BASICAS}")
 
-# ax3.plot(range(0, simulacao), ambulancias_avancadas_disponiveis_por_simulacao, color="blue")
-# ax3.set_title("Ambulâncias Avançadas Disponíveis")
-# ax3.set_ylabel("Número de Ambulâncias Avançadas")
-# ax3.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+mediaBasica = mean(mediaDeDistanciaDosAtendimentosBasicos)
+desvioPadroaBasico = stdev(mediaDeDistanciaDosAtendimentosBasicos)
+ax5.plot(range(0, simulacao), mediaDeDistanciaDosAtendimentosBasicos, color="blue")
+ax5.axhline(y=(mediaBasica + desvioPadroaBasico), xmin= 0, xmax=simulacao, color="red")
+ax5.axhline(y=(mediaBasica), xmin= 0, xmax=simulacao, color="orange")
+ax5.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color="black")
+ax5.set_title("Média das Distâncias dos Atendimentos Básicos (metros)")
+ax5.set_ylabel("Média das Distâncias dos Atendimentos Básicos (metros)")
+ax5.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
+ax5.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
-# fig3.savefig(f"Disponiveis_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
+fig5.savefig(f"Media_De_Distancias_Dos_Atendimentos_Basicos_{Environment.SPEED}_{Environment.BASICAS}")
 
-# ax4.plot(range(0, simulacao), ambulancias_basicas_disponiveis_por_simulacao, color="green")
-# ax4.set_title("Ambulâncias Básicas Disponíveis")
-# ax4.set_ylabel("Número de Básicas Avançadas")
-# ax4.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
+mediaBasica = mean(mediaDeDistanciaDosAtendimentosAvancados)
+desvioPadroaBasico = stdev(mediaDeDistanciaDosAtendimentosAvancados)
+ax6.plot(range(0, simulacao), mediaDeDistanciaDosAtendimentosAvancados, color="blue")
+ax6.axhline(y=(mediaBasica + desvioPadroaBasico), xmin= 0, xmax=simulacao, color="red")
+ax6.axhline(y=(mediaBasica), xmin= 0, xmax=simulacao, color="orange")
+ax6.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color="black")
+ax6.set_title("Média das Distâncias dos Atendimentos Avançados (metros)")
+ax6.set_ylabel("Média das Distâncias dos Atendimentos Avançados (metros)")
+ax6.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
+ax6.legend(["Média ao Longo das Execuções", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
-# fig4.savefig(f"Disponiveis_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
-
-# ax5.plot(range(0, simulacao), porcentagem_de_atendimentos_avancados, color="blue")
-# ax5.set_title("Porcentagem de Atendimentos Avançados Não Realizados")
-# ax5.set_ylabel("Porcentagem de Atendimentos Avançados")
-# ax5.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
-
-# fig5.savefig(f"Porcentagem_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
-
-# ax6.plot(range(0, simulacao), porcentagem_de_atendimentos_basicos, color="green")
-# ax6.set_title("Porcentagem de Atendimentos Básicos Não Realizados")
-# ax6.set_ylabel("Porcentagem de Atendimentos Básicos")
-# ax6.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
-
-# fig6.savefig(f"Porcentagem_Avancadas_{Environment.SPEED}_{Environment.BASICAS}")
+fig6.savefig(f"Media_De_Distancias_Dos_Atendimentos_Avancados_{Environment.SPEED}_{Environment.BASICAS}")
 
 plt.show()
