@@ -81,8 +81,28 @@ ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(Environment.BASI
 
 simulacao = 0
 
-atendimentos_avancados_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(50)
-atendimentos_basicos_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(300)
+atendimentos_avancados_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(80)
+atendimentos_basicos_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(400)
+
+# Exibindo o histograma
+plt.figure(figsize=(15, 5))
+plt.bar(np.arange(96), atendimentos_basicos_por_ciclo_de_tempo, width=0.8, align='center', color="green")
+plt.xlabel('Intervalos de 15 minutos ao longo do dia')
+plt.ylabel('Número de Ocorrências Básicas')
+plt.title('Distribuição de Ocorrências Básicas ao Longo do Dia')
+plt.xticks(np.arange(0, 96, 4))
+plt.grid(True)
+plt.show()
+    
+# Exibindo o histograma
+plt.figure(figsize=(15, 5))
+plt.bar(np.arange(96), atendimentos_avancados_por_ciclo_de_tempo, width=0.8, align='center', color="blue")
+plt.xlabel('Intervalos de 15 minutos ao longo do dia')
+plt.ylabel('Número de Ocorrências Avançadas')
+plt.title('Distribuição de Ocorrências Avançadas ao Longo do Dia')
+plt.xticks(np.arange(0, 96, 4))
+plt.grid(True)
+plt.show()
 
 for ciclo_de_simulacao in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
