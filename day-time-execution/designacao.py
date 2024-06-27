@@ -8,11 +8,12 @@ import random
 from environment import Environment
 import math
 from statistics import stdev, mean
+from AtendimentosGenerator import NumeroDeAtendimentosPorIntervaloDeTempo
 
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-QUANTIDADE_DE_DIAS = 7
+QUANTIDADE_DE_DIAS = 1
 CICLOS_DA_SIMULACAO = 96 * QUANTIDADE_DE_DIAS # (quantidade de ciclos de 15 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 15
 
@@ -80,10 +81,16 @@ ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(Environment.BASI
 
 simulacao = 0
 
-for _ in tqdm(range(0, CICLOS_DA_SIMULACAO)):
+atendimentos_avancados_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(50)
+atendimentos_basicos_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(300)
+
+for ciclo_de_simulacao in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
-    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, todosOsAtendimentosAvancadosNaoRealizadosByUID, max = 8)
-    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, todosOsAtendimentosBasicosNaoRealizadosByUID, max = 15)
+    
+    quantidade_de_novos_atendimentos_basicos = atendimentos_basicos_por_ciclo_de_tempo[ciclo_de_simulacao]
+    quantidade_de_novos_atendimentos_avancados = atendimentos_avancados_por_ciclo_de_tempo[ciclo_de_simulacao]
+    atendimentosAvancados: List[Dict[str, int]] = Atendimentos.generate(atendimentosAvancadosNaoContemplados, todosOsAtendimentosAvancadosNaoRealizadosByUID, quantidade_de_novos_atendimentos_avancados)
+    atendimentosBasicos: List[Dict[str, int]] = Atendimentos.generate(atendimentosBasicosNaoContemplados, todosOsAtendimentosBasicosNaoRealizadosByUID, quantidade_de_novos_atendimentos_basicos)
     
     ambulanciasAvancadasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasAvancadas)
     ambulanciasBasicasNaoImpedidas = filtrar_ambulancias_nao_impedidas(ambulanciasBasicas)

@@ -30,22 +30,3 @@ class NumeroDeAtendimentosPorIntervaloDeTempo:
         contagem_ocorrencias, _ = np.histogram(ocorrencias_por_intervalo, bins=np.arange(97))
         
         return contagem_ocorrencias
-
-
-contagem_ocorrencias = NumeroDeAtendimentosPorIntervaloDeTempo.generate(300)
-
-# Exibindo o histograma
-plt.figure(figsize=(15, 5))
-plt.bar(np.arange(96), contagem_ocorrencias, width=0.8, align='center')
-plt.xlabel('Intervalo de 15 minutos ao longo do dia')
-plt.ylabel('Número de ocorrências')
-plt.title('Distribuição de Ocorrências ao Longo do Dia')
-plt.xticks(np.arange(0, 96, 4))
-plt.grid(True)
-plt.show()
-
-# Imprimindo a contagem de ocorrências por intervalo de 15 minutos
-for i in range(96):
-    hora = i // 4
-    minuto = (i % 4) * 15
-    print(f"{hora:02d}:{minuto:02d} - {contagem_ocorrencias[i]} ocorrências")

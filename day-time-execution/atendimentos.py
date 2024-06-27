@@ -6,7 +6,7 @@ import uuid
 class Atendimentos:
     
     @staticmethod
-    def generate(atendimentosNaoRealizados: List[Dict[str, int]] = [], todosOsAtendimentosNaoRealizadosByUID: Dict[str, float] = {}, max: int = 3) -> List[Dict[str, int]]:
+    def generate(atendimentosNaoRealizados: List[Dict[str, int]] = [], todosOsAtendimentosNaoRealizadosByUID: Dict[str, float] = {}, quantidade: int = 1) -> List[Dict[str, int]]:
         atendimentos = []
         pesos = [1,1,2,3,5,8,13,21,34,55]
         
@@ -14,7 +14,6 @@ class Atendimentos:
             atendimento["peso"] += todosOsAtendimentosNaoRealizadosByUID[atendimento["id"]]
             atendimentos.append(atendimento)
         
-        quantidade = random.randint(1, max)
         for _ in range(quantidade):
             atendimentos.append({
                 "id": str(uuid.uuid4()),
