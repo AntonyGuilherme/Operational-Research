@@ -13,8 +13,7 @@ from AtendimentosGenerator import NumeroDeAtendimentosPorIntervaloDeTempo
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-QUANTIDADE_DE_DIAS = 1
-CICLOS_DA_SIMULACAO = 96 * QUANTIDADE_DE_DIAS # (quantidade de ciclos de 15 minutos em x dias)
+CICLOS_DA_SIMULACAO = 96 # (quantidade de ciclos de 15 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 15
 
 # definir uma velocidade média para todas as ambulâncias (57km/h) - done
@@ -84,25 +83,26 @@ simulacao = 0
 atendimentos_avancados_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(80)
 atendimentos_basicos_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(400)
 
+fig9, ax9 = plt.subplots()
+fig10, ax10 = plt.subplots()
+
 # Exibindo o histograma
-plt.figure(figsize=(15, 5))
-plt.bar(np.arange(96), atendimentos_basicos_por_ciclo_de_tempo, width=0.8, align='center', color="green")
-plt.xlabel('Intervalos de 15 minutos ao longo do dia')
-plt.ylabel('Número de Ocorrências Básicas')
-plt.title('Distribuição de Ocorrências Básicas ao Longo do Dia')
-plt.xticks(np.arange(0, 96, 4))
-plt.grid(True)
-plt.show()
+ax9.bar(np.arange(96), atendimentos_basicos_por_ciclo_de_tempo, width=0.8, align='center', color="green")
+ax9.set_xlabel('Intervalos de 15 minutos ao longo do dia')
+ax9.set_ylabel('Número de Ocorrências Básicas')
+ax9.set_title('Distribuição de Ocorrências Básicas ao Longo do Dia')
+ax9.grid(True)
+
+fig9.savefig(f"Ocorrencias_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
     
 # Exibindo o histograma
-plt.figure(figsize=(15, 5))
-plt.bar(np.arange(96), atendimentos_avancados_por_ciclo_de_tempo, width=0.8, align='center', color="blue")
-plt.xlabel('Intervalos de 15 minutos ao longo do dia')
-plt.ylabel('Número de Ocorrências Avançadas')
-plt.title('Distribuição de Ocorrências Avançadas ao Longo do Dia')
-plt.xticks(np.arange(0, 96, 4))
-plt.grid(True)
-plt.show()
+ax10.bar(np.arange(96), atendimentos_avancados_por_ciclo_de_tempo, width=0.8, align='center', color="blue")
+ax10.set_xlabel('Intervalos de 15 minutos ao longo do dia')
+ax10.set_ylabel('Número de Ocorrências Avançadas')
+ax10.set_title('Distribuição de Ocorrências Avançadas ao Longo do Dia')
+ax10.grid(True)
+
+fig9.savefig(f"Ocorrencias_Avancadas_{Environment.SPEED}_{Environment.AVANCADAS}")
 
 for ciclo_de_simulacao in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
