@@ -282,7 +282,7 @@ ax.axhline(y=(mediaAvancada - desvioPadraoAvancado), xmin= 0, xmax=simulacao, co
 ax.set_title("Tempo de Espera Médio Para Atendimentos Avançados (minutos)")
 ax.set_ylabel("Tempo em Minutos")
 ax.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
-ax.legend(["Tempo de Espera Médio Para Atendimentos Avançados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax.legend(["Tempo de Espera Médio Para Atendimentos Avançados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig1.savefig(f"Espera_Media_Avancadas_{Environment.SPEED}_{Environment.AVANCADAS}")
 
@@ -295,7 +295,7 @@ ax2.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color
 ax2.set_title("Tempo de Espera Médio Para Atendimentos Básicos (minutos)")
 ax2.set_ylabel("Tempo em Minutos")
 ax2.set_xlabel("Execuções (Ciclos de Cinco Minutos)")
-ax2.legend(["Tempo de Espera Médio Para Atendimentos Básicos", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax2.legend(["Tempo de Espera Médio Para Atendimentos Básicos", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig2.savefig(f"Espera_Media_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
 
@@ -308,7 +308,7 @@ ax3.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color
 ax3.set_title("Número de Atendimentos Basicos Não Realizados")
 ax3.set_ylabel("Número de Atendimentos Basicos Não Realizados")
 ax3.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
-ax3.legend(["Número de Atendimentos Basicos Não Realizados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax3.legend(["Número de Atendimentos Basicos Não Realizados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig3.savefig(f"Numero_De_Atendimentos_Basicos_Nao_Realizados_{Environment.SPEED}_{Environment.BASICAS}")
 
@@ -321,7 +321,7 @@ ax4.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color
 ax4.set_title("Número de Atendimentos Avançados Não Realizados")
 ax4.set_ylabel("Número de Atendimentos Avançados Não Realizados")
 ax4.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
-ax4.legend(["Número de Atendimentos Avançados Não Realizados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax4.legend(["Número de Atendimentos Avançados Não Realizados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig4.savefig(f"Numero_De_Atendimentos_Avancados_Nao_Realizados_{Environment.SPEED}_{Environment.AVANCADAS}")
 
@@ -334,7 +334,7 @@ ax5.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color
 ax5.set_title("Média das Distâncias dos Atendimentos Básicos (metros)")
 ax5.set_ylabel("Média das Distâncias dos Atendimentos Básicos (metros)")
 ax5.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
-ax5.legend(["Média das Distâncias dos Atendimentos Básicos", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax5.legend(["Média das Distâncias dos Atendimentos Básicos", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig5.savefig(f"Media_De_Distancias_Dos_Atendimentos_Basicos_{Environment.SPEED}_{Environment.BASICAS}")
 
@@ -347,7 +347,7 @@ ax6.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color
 ax6.set_title("Média das Distâncias dos Atendimentos Avançados (metros)")
 ax6.set_ylabel("Média das Distâncias dos Atendimentos Avançados (metros)")
 ax6.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
-ax6.legend(["Média das Distâncias dos Atendimentos Avançados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax6.legend(["Média das Distâncias dos Atendimentos Avançados", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig6.savefig(f"Media_De_Distancias_Dos_Atendimentos_Avancados_{Environment.SPEED}_{Environment.AVANCADAS}")
 
@@ -360,7 +360,7 @@ ax7.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color
 ax7.set_title("Número de Ambulâncias Avançadas Disponíveis")
 ax7.set_ylabel("Número de Ambulâncias Avançadas Disponíveis")
 ax7.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
-ax7.legend(["Número de Ambulâncias Avançadas Disponíveis", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax7.legend(["Número de Ambulâncias Avançadas Disponíveis", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig7.savefig(f"Numero_De_Ambulancias_Avancadas_{Environment.SPEED}_{Environment.AVANCADAS}")
 
@@ -373,7 +373,7 @@ ax8.axhline(y=(mediaBasica - desvioPadroaBasico), xmin= 0, xmax=simulacao, color
 ax8.set_title("Número de Ambulâncias Básicas Disponíveis")
 ax8.set_ylabel("Número de Ambulâncias Básicas Disponíveis")
 ax8.set_xlabel("Execuções (Ciclos de Quinze Minutos)")
-ax8.legend(["Número de Ambulâncias Básicas Disponíveis", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
+# ax8.legend(["Número de Ambulâncias Básicas Disponíveis", "Média Geral + Desvio Padrão", "Média Geral", "Média Geral - Desvio Padrão"])
 
 fig8.savefig(f"Numero_De_Ambulancias_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
 
