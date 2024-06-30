@@ -13,7 +13,8 @@ from AtendimentosGenerator import NumeroDeAtendimentosPorIntervaloDeTempo
 import matplotlib.pyplot as plt
 
 TEMPO_ATUAL = 0
-CICLOS_DA_SIMULACAO = 96 # (quantidade de ciclos de 15 minutos em x dias)
+DIAS = 30
+CICLOS_DA_SIMULACAO = 96 * DIAS # (quantidade de ciclos de 15 minutos em x dias)
 TEMPO_ENTRE_SIMULACOES = 15
 
 # definir uma velocidade média para todas as ambulâncias (57km/h) - done
@@ -23,7 +24,7 @@ TEMPO_ENTRE_SIMULACOES = 15
 # tempo médio de atendimento - done
 # variância - done
 
-# 1. Quantas vezes um atendimento básico / urgente deixou de ser atendidom - done
+# 1. Quantas vezes um atendimento básico / urgente deixou de ser atendido - done
 # 2. Qual é a média de tempo que um chamado urgente leva para ser atendido? - done
 # 3. Qual o número médio de USB/USA's disponíveis por passo de tempo? - done
 # 4. Qual a média da distância que uma unidade está de um chamado atribuído? - done
@@ -38,10 +39,7 @@ TEMPO_ENTRE_SIMULACOES = 15
 
 # 50km/h        | 3                         | 14                    | 
 # 50km/h        | 6                         | 21                    | 
-# 50km/h        | 9                         | 28                    | 
-
-# 40km/h        | 3                         | 14                    | 
-# 60km/h        | 9                         | 28                    | 
+# 50km/h        | 9                         | 28                    |
 
 todosOsAtendimentosAvancadosNaoRealizadosByUID : Dict[str, float] = {}
 todosOsAtendimentosBasicosNaoRealizadosByUID : Dict[str, float] = {}
@@ -80,29 +78,8 @@ ambulanciasBasicas: List[Dict[str, int]] = Ambulancias.generate(Environment.BASI
 
 simulacao = 0
 
-atendimentos_avancados_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(80)
-atendimentos_basicos_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(400)
-
-fig9, ax9 = plt.subplots()
-fig10, ax10 = plt.subplots()
-
-# Exibindo o histograma
-ax9.bar(np.arange(96), atendimentos_basicos_por_ciclo_de_tempo, width=0.8, align='center', color="green")
-ax9.set_xlabel('Intervalos de 15 minutos ao longo do dia')
-ax9.set_ylabel('Número de Ocorrências Básicas')
-ax9.set_title('Distribuição de Ocorrências Básicas ao Longo do Dia')
-ax9.grid(True)
-
-fig9.savefig(f"Ocorrencias_Basicas_{Environment.SPEED}_{Environment.BASICAS}")
-    
-# Exibindo o histograma
-ax10.bar(np.arange(96), atendimentos_avancados_por_ciclo_de_tempo, width=0.8, align='center', color="blue")
-ax10.set_xlabel('Intervalos de 15 minutos ao longo do dia')
-ax10.set_ylabel('Número de Ocorrências Avançadas')
-ax10.set_title('Distribuição de Ocorrências Avançadas ao Longo do Dia')
-ax10.grid(True)
-
-fig9.savefig(f"Ocorrencias_Avancadas_{Environment.SPEED}_{Environment.AVANCADAS}")
+atendimentos_avancados_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(80, DIAS)
+atendimentos_basicos_por_ciclo_de_tempo = NumeroDeAtendimentosPorIntervaloDeTempo.generate(400, DIAS)
 
 for ciclo_de_simulacao in tqdm(range(0, CICLOS_DA_SIMULACAO)):
     TEMPO_ATUAL = simulacao * TEMPO_ENTRE_SIMULACOES
